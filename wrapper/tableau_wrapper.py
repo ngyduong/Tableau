@@ -4,7 +4,8 @@ import time
 from typing import Any, Callable, List
 
 import tableauserverclient as TSC
-from config import ConfigWrapper
+
+from wrapper.config import ConfigWrapper
 
 
 class TableauClient:

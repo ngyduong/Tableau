@@ -31,11 +31,11 @@ class ConfigWrapper(metaclass=Singleton):
 
     def __init__(self) -> None:
         self.tab_cred = TabCredentials(
-            pat_name=os.getenv("TAB_PAT_NAME", ""),
-            pat_secret=os.getenv("TAB_PAT_SECRET", ""),
-            site_id=os.getenv("TAB_SITE_ID", ""),
-            site_url=os.getenv("TAB_SITE_URL", ""),
-            api_version=os.getenv("TAB_API_VERSION"),
+            pat_name=os.getenv("tab_pat_name", ""),
+            pat_secret=os.getenv("tab_secret_id", ""),
+            site_id=os.getenv("tab_site_id", ""),
+            site_url=os.getenv("tab_site_url", ""),
+            api_version=os.getenv("tab_api_version", ""),
         )
         self._validate()
 
