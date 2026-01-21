@@ -11,7 +11,7 @@ import logging
 import sys
 from typing import Callable, Dict
 
-from src.scripts.hyper_api.generate_hyper import main as run_generate_hyper
+from src.scripts.hyper_api.generate_hyper import main as main_generate_hyper
 from src.utils.logging_setup import setup_logging
 from src.wrapper.config import ConfigWrapper
 from src.wrapper.tableau_wrapper import TableauClient
@@ -35,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
-    setup_logging(app_name="tableau-cli")  # reads LOG_LEVEL env by default
+    setup_logging(app_name="tableau-cli")
     logger.info("Starting CLI")
     parser = build_parser()
     args = parser.parse_args()
@@ -44,7 +44,7 @@ def main() -> int:
     cfg = ConfigWrapper()
 
     scripts: Dict[str, ScriptFn] = {
-        "generate_hyper": run_generate_hyper,
+        "generate_hyper": main_generate_hyper,
     }
 
     script_fn = scripts.get(args.script)
@@ -53,8 +53,8 @@ def main() -> int:
         return 2
 
     # One shared Tableau session for the whole run
-    with TableauClient() as tc:
-        script_fn(tc, cfg, args)
+    with TableauClient() as tsc:
+        script_fn(tsc, cfg, args)
 
     return 0
 
