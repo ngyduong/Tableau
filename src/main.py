@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import sys
 from typing import Callable, Dict
 
 from src.scripts.hyper_api.generate_hyper import main as main_generate_hyper
@@ -47,10 +46,6 @@ def main() -> int:
     }
 
     script_fn = scripts.get(args.script)
-    if not script_fn:
-        print(f"No script found: {args.script}", file=sys.stderr)
-        return 2
-
     script_fn(cfg, args)
 
     return 0

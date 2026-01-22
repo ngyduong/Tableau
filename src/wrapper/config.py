@@ -30,19 +30,23 @@ class ConfigWrapper(metaclass=Singleton):
     """
 
     def __init__(self) -> None:
-        self.tab_cred = TabCredentials(
+        self._tab_cred = TabCredentials(
             pat_name=os.getenv("tab_pat_name", ""),
             pat_secret=os.getenv("tab_secret_id", ""),
             site_id=os.getenv("tab_site_id", ""),
             site_url=os.getenv("tab_site_url", ""),
             api_version=os.getenv("tab_api_version", ""),
         )
-        self._validate()
 
-    def _validate(self) -> None:
+    @property
+    def tab_cred(self) -> TabCredentials:
+        self._validate_tableau()
+        return self._tab_cred
+
+    def _validate_tableau(self) -> None:
         missing = [
             name
-            for name, value in vars(self.tab_cred).items()
+            for name, value in vars(self._tab_cred).items()
             if name != "api_version" and not value
         ]
         if missing:

@@ -19,7 +19,7 @@ def main(cfg: ConfigWrapper, args: argparse.Namespace) -> None:
     """
 
     # Log the start of the script execution
-    logger.info("Starting script: publish_hyper")
+    logger.info(f"Starting script: {args.script}")
 
     # Path to the Hyper file to publish (to be replaced at runtime or via config)
     hyper_filepath = "$REPLACE_WITH_YOUR_HYPER_PATH"
@@ -34,7 +34,7 @@ def main(cfg: ConfigWrapper, args: argparse.Namespace) -> None:
     mode = "CreateNew"
 
     # Measure and log the duration of the publish step
-    with log_duration("publish_hyper"):
+    with log_duration(args.script):
         with TableauClient() as tsc:
             tsc.publish_datasources(
                 server=tsc.server,
@@ -44,4 +44,4 @@ def main(cfg: ConfigWrapper, args: argparse.Namespace) -> None:
             )
 
     # Log the successful end of the script
-    logger.info("Script finished: publish_hyper")
+    logger.info(f"Script finished: {args.script}")
