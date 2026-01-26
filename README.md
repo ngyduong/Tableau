@@ -145,3 +145,88 @@ This step:
 - Validate data before generating Hyper files
 - Treat Hyper files as deployable artifacts
 - Publish only after successful generation
+
+---
+
+## ⚠️ Important limitation: SQL compute on Tableau Cloud extracts
+
+Even when using the Hyper API, it is important to understand that **Tableau Cloud still enforces SQL compute limits at query time**.
+
+### The 20 GB SQL compute limit
+
+On Tableau Cloud, **SQL compute is capped at ~20 GB per query**, regardless of:
+
+- the size of the extract
+- how the extract was generated
+- whether it was built via classic refresh or Hyper API
+
+This means that **publishing a very large extract (e.g. 50 GB, 80 GB, 100 GB)** does *not* remove this limitation.
+
+### Impact on calculated fields
+
+Certain operations are particularly expensive in terms of SQL compute, for example:
+
+- `COUNT(DISTINCT ...)`
+- high-cardinality aggregations
+- complex calculated fields evaluated at query time
+- LOD expressions over large dimensions
+
+On large extracts, these calculations can:
+
+- fail silently
+- return errors
+- never finish
+- exceed the 20 GB SQL compute limit
+
+Even though the extract exists and is published successfully.
+
+
+### Why this happens
+
+- Hyper API optimizes **data ingestion**
+- Tableau Cloud still controls **query execution**
+- Query-time calculations are executed within Tableau Cloud’s SQL compute limits
+
+In short:
+
+> **Hyper API solves extract generation problems, not query-time compute limits.**
+
+### Recommended approach for very large datasets
+
+If your use case requires:
+
+- very large datasets (tens or hundreds of GB)
+- heavy aggregations
+- `COUNT DISTINCT` on high-cardinality columns
+- complex analytical logic
+
+Then **a Live connection is often the better option**, because:
+
+- compute is pushed down to the source system
+- databases / warehouses scale compute elastically
+- Tableau Cloud only renders results
+
+
+### Practical rule of thumb
+
+| Use case | Recommended approach |
+|--------|----------------------|
+| Large data, simple aggregations | Hyper extract |
+| Large data + complex calculations | Live connection |
+| Heavy `COUNT DISTINCT` | Live connection |
+| High-cardinality dimensions | Live connection |
+| Pre-aggregated / curated data | Hyper extract |
+
+
+### Best practice
+
+If you want to keep using extracts on large datasets:
+
+- pre-aggregate data **before** generating the extract
+- avoid `COUNT DISTINCT` in Tableau
+- materialize metrics upstream
+- reduce cardinality where possible
+
+Otherwise, prefer **Live connections** for analytical workloads that exceed Tableau Cloud’s SQL compute limits.
+
+> **Hyper API is powerful — but it does not replace the need for a scalable compute engine.**
